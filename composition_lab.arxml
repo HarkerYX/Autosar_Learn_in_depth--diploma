@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AUTOSAR xmlns="http://autosar.org/schema/r4.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://autosar.org/schema/r4.0 AUTOSAR_00046.xsd">
+	<!-- composition lab- MARIAM EZZAT -->
+	<AR-PACKAGES>
+		<AR-PACKAGE>
+			<SHORT-NAME>CompostionAndConnectors_Lab</SHORT-NAME>
+			<ELEMENTS>
+				<!-- Interfaces Definition -->
+				<!-- Interface carries the status of the light -->
+				<SENDER-RECEIVER-INTERFACE>
+					<SHORT-NAME>SRI_LightControl</SHORT-NAME>
+					<DATA-ELEMENTS>
+						<VARIABLE-DATA-PROTOTYPE>
+							<SHORT-NAME>LightControl</SHORT-NAME>
+							<TYPE-TREF DEST="IMPLEMENTATION-DATA-TYPE">/AUTOSAR_PlatformTypes/ImplementationDataTypes/uint32</TYPE-TREF>
+						</VARIABLE-DATA-PROTOTYPE>
+					</DATA-ELEMENTS>
+				</SENDER-RECEIVER-INTERFACE>
+				<!-- interface to carry the action -->
+				<SENDER-RECEIVER-INTERFACE>
+					<SHORT-NAME>SRI_LightAction</SHORT-NAME>
+					<DATA-ELEMENTS>
+						<VARIABLE-DATA-PROTOTYPE>
+							<SHORT-NAME>Action</SHORT-NAME>
+							<TYPE-TREF DEST="IMPLEMENTATION-DATA-TYPE">/AUTOSAR_PlatformTypes/ImplementationDataTypes/uint32</TYPE-TREF>
+						</VARIABLE-DATA-PROTOTYPE>
+					</DATA-ELEMENTS>
+				</SENDER-RECEIVER-INTERFACE>
+				<!-- SWCs Defination -->
+				<!-- swc to decide the status of light -->
+				<SENSOR-ACTUATOR-SW-COMPONENT-TYPE>
+					<SHORT-NAME>LightStatusCtrl_SWC</SHORT-NAME>
+					<PORTS>
+						<P-PORT-PROTOTYPE>
+							<SHORT-NAME>Pp_SRI_LightControl</SHORT-NAME>
+							<PROVIDED-INTERFACE-TREF
+								DEST="SENDER-RECEIVER-INTERFACE">/CompostionAndConnectors_Lab/SRI_LightControl</PROVIDED-INTERFACE-TREF>
+						</P-PORT-PROTOTYPE>
+					</PORTS>
+				</SENSOR-ACTUATOR-SW-COMPONENT-TYPE>
+				<!-- swc responsible for the Algo -->
+				<APPLICATION-SW-COMPONENT-TYPE>
+					<SHORT-NAME>LightCtrl_algo</SHORT-NAME>
+					<PORTS>
+						<R-PORT-PROTOTYPE>
+							<SHORT-NAME>Rp_SRI_LightControl</SHORT-NAME>
+							<REQUIRED-INTERFACE-TREF
+								DEST="SENDER-RECEIVER-INTERFACE">/CompostionAndConnectors_Lab/SRI_LightControl</REQUIRED-INTERFACE-TREF>
+						</R-PORT-PROTOTYPE>
+						<P-PORT-PROTOTYPE>
+							<SHORT-NAME>Pp_SRI_LightAction</SHORT-NAME>
+							<PROVIDED-INTERFACE-TREF
+								DEST="SENDER-RECEIVER-INTERFACE">/CompostionAndConnectors_Lab/SRI_LightAction</PROVIDED-INTERFACE-TREF>
+						</P-PORT-PROTOTYPE>
+					</PORTS>
+				</APPLICATION-SW-COMPONENT-TYPE>
+				<!-- swc responsible to take the Action -->
+				<SENSOR-ACTUATOR-SW-COMPONENT-TYPE>
+					<SHORT-NAME>LightActuator_SWC</SHORT-NAME>
+					<PORTS>
+						<R-PORT-PROTOTYPE>
+							<SHORT-NAME>Rp_SRI_LightAction</SHORT-NAME>
+							<REQUIRED-INTERFACE-TREF
+								DEST="SENDER-RECEIVER-INTERFACE">/CompostionAndConnectors_Lab/SRI_LightAction</REQUIRED-INTERFACE-TREF>
+						</R-PORT-PROTOTYPE>
+					</PORTS>
+				</SENSOR-ACTUATOR-SW-COMPONENT-TYPE>
+				<!-- Compositions Definition -->
+				<!-- SW_COMP1 ~> contains LightStatusCtrl_swc and light_ctrl_algo swc -->
+				<COMPOSITION-SW-COMPONENT-TYPE>
+					<SHORT-NAME>SW_COMP1</SHORT-NAME>
+					<!-- external provider port which be conntected to the LightActuator_SWC -->
+					<PORTS>
+						<P-PORT-PROTOTYPE>
+							<SHORT-NAME>Pp_External_LightAction</SHORT-NAME>
+							<PROVIDED-INTERFACE-TREF
+								DEST="SENDER-RECEIVER-INTERFACE">/CompostionAndConnectors_Lab/SRI_LightAction</PROVIDED-INTERFACE-TREF>
+						</P-PORT-PROTOTYPE>
+					</PORTS>
+					<COMPONENTS>
+						<SW-COMPONENT-PROTOTYPE>
+							<SHORT-NAME>LC_SR_SWC</SHORT-NAME>
+							<TYPE-TREF DEST="SENSOR-ACTUATOR-SW-COMPONENT-TYPE">/CompostionAndConnectors_Lab/LightStatusCtrl_SWC</TYPE-TREF>
+						</SW-COMPONENT-PROTOTYPE>
+						<SW-COMPONENT-PROTOTYPE>
+							<SHORT-NAME>Algo_SWC</SHORT-NAME>
+							<TYPE-TREF DEST="APPLICATION-SW-COMPONENT-TYPE">/CompostionAndConnectors_Lab/LightCtrl_algo</TYPE-TREF>
+						</SW-COMPONENT-PROTOTYPE>
+					</COMPONENTS>
+					<CONNECTORS>
+						<ASSEMBLY-SW-CONNECTOR>
+							<SHORT-NAME>Assemply_LightCtrl</SHORT-NAME>
+							<PROVIDER-IREF>
+								<CONTEXT-COMPONENT-REF
+									DEST="SW-COMPONENT-PROTOTYPE">/CompostionAndConnectors_Lab/SW_COMP1</CONTEXT-COMPONENT-REF>
+								<TARGET-P-PORT-REF DEST="P-PORT-PROTOTYPE">/LightStatusCtrl_SWC/Pp_SRI_LightControl</TARGET-P-PORT-REF>
+							</PROVIDER-IREF>
+							<REQUESTER-IREF>
+								<CONTEXT-COMPONENT-REF
+									DEST="SW-COMPONENT-PROTOTYPE">/SW_COMP1/Algo_SWC</CONTEXT-COMPONENT-REF>
+								<TARGET-R-PORT-REF DEST="R-PORT-PROTOTYPE">/LightCtrl_algo/Rp_SRI_LightControl</TARGET-R-PORT-REF>
+							</REQUESTER-IREF>
+						</ASSEMBLY-SW-CONNECTOR>
+						<DELEGATION-SW-CONNECTOR>
+							<SHORT-NAME>De_lightAction</SHORT-NAME>
+							<INNER-PORT-IREF>
+								<P-PORT-IN-COMPOSITION-INSTANCE-REF>
+									<CONTEXT-COMPONENT-REF
+										DEST="SW-COMPONENT-PROTOTYPE">/SW_COMP1/Algo_SWC</CONTEXT-COMPONENT-REF>
+									<TARGET-P-PORT-REF DEST="P-PORT-PROTOTYPE">/LightCtrl_algo/Pp_SRI_LightAction</TARGET-P-PORT-REF>
+								</P-PORT-IN-COMPOSITION-INSTANCE-REF>
+							</INNER-PORT-IREF>
+							<OUTER-PORT-REF DEST="P-PORT-PROTOTYPE">/SW_COMP1/Pp_External_LightAction</OUTER-PORT-REF>
+						</DELEGATION-SW-CONNECTOR>
+					</CONNECTORS>
+				</COMPOSITION-SW-COMPONENT-TYPE>
+				<!-- composite contains the sw_comp1 and light_actuator_swc -->
+				<COMPOSITION-SW-COMPONENT-TYPE>
+					<SHORT-NAME>TOP_LEVEL_COMP</SHORT-NAME>
+					<COMPONENTS>
+						<SW-COMPONENT-PROTOTYPE>
+							<SHORT-NAME>sw_comp1_inst</SHORT-NAME>
+							<TYPE-TREF DEST="COMPOSITION-SW-COMPONENT-TYPE">/SW_COMP1</TYPE-TREF>
+						</SW-COMPONENT-PROTOTYPE>
+						<SW-COMPONENT-PROTOTYPE>
+							<SHORT-NAME>LightActuator_SWC3</SHORT-NAME>
+							<TYPE-TREF DEST="SENSOR-ACTUATOR-SW-COMPONENT-TYPE">/LightActuator_SWC</TYPE-TREF>
+						</SW-COMPONENT-PROTOTYPE>
+					</COMPONENTS>
+					<CONNECTORS>
+						<ASSEMBLY-SW-CONNECTOR>
+							<SHORT-NAME>Assemply_LightAction</SHORT-NAME>
+							<PROVIDER-IREF>
+								<CONTEXT-COMPONENT-REF
+									DEST="SW-COMPONENT-PROTOTYPE">/TOP_LEVEL_COMP/sw_comp1_inst</CONTEXT-COMPONENT-REF>
+								<TARGET-P-PORT-REF DEST="P-PORT-PROTOTYPE">/SW_COMP1/Pp_External_LightAction</TARGET-P-PORT-REF>
+							</PROVIDER-IREF>
+							<REQUESTER-IREF>
+								<CONTEXT-COMPONENT-REF
+									DEST="SW-COMPONENT-PROTOTYPE">/TOP_LEVEL_COMP/LightActuator_SWC3</CONTEXT-COMPONENT-REF>
+								<TARGET-R-PORT-REF DEST="R-PORT-PROTOTYPE">/LightActuator_SWC/Rp_SRI_LightAction</TARGET-R-PORT-REF>
+
+							</REQUESTER-IREF>
+						</ASSEMBLY-SW-CONNECTOR>
+
+					</CONNECTORS>
+				</COMPOSITION-SW-COMPONENT-TYPE>
+			</ELEMENTS>
+		</AR-PACKAGE>
+	</AR-PACKAGES>
+
+
+</AUTOSAR>
